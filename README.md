@@ -53,6 +53,33 @@ Coyote and buffer: `grace.coyote.arm()` when the player leaves the ground, `grac
 jump press, `tick(simDt)` both every sim step, and jump when `grounded && grace.buffer.consume()` or
 `pressed && grace.coyote.consume()`.
 
+## Feel kits (FEEL-KIT-1 "Every game event plays its feel kit")
+
+`KIT_RANGES` holds every kit of `BaseClient/docs/code-standards/feel-kits.md` as data: ordered beats,
+allowed ranges per tier (`Tier.Common` / `Rare` / `Jackpot`; for `hit` Common = light, Rare = heavy)
+and a reduced-motion variant. `defineKit` rejects a game's kit config with any missing, unknown or
+out-of-range value; `expectKitInRange` is the same check for a unit test.
+
+```ts
+import { FeelTrace, KitId, Tier, defineKit, exposeFeelTrace, feelTraceRequested, kitModeFrom, playKit } from '@dloizides/game-feel';
+
+const coin = defineKit({ kit: KitId.Pickup, tier: Tier.Common, params: COIN_PARAMS, reducedMotion: COIN_RM });
+const trace = new FeelTrace();
+if (feelTraceRequested(location.search)) {
+  exposeFeelTrace(trace, window as unknown as Record<string, unknown>);
+}
+const mode = kitModeFrom({ search: location.search, prefersReducedMotion: matchMedia('(prefers-reduced-motion: reduce)').matches });
+
+function onCoin(nowMs: number): void {
+  coins += 1;
+  runs.push(playKit(coin, { trace, onBeat: (cue) => fx.play(cue) }, nowMs, mode));
+}
+```
+
+Commit and every 0 ms beat fire inside `playKit`; call `run.advance(nowMs)` each frame for the rest.
+`?juice=0` (`KitMode.Off`) plays only the commit. Each cue (`{kit, tier, mode, beat, scheduledMs,
+tMs, durationMs, params}`) lands in the trace, exposed as `window.__feelTrace` under `?feeltrace=1`.
+
 ## Scripts
 
 `npm run lint` · `npm run typecheck` · `npm test` · `npm run test:coverage` (100% threshold) ·
