@@ -1,6 +1,6 @@
 {
   "name": "@dloizides/game-feel",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Engine-free game feel: trauma screenshake with smooth noise, a hitstop and slow-mo clock, a reduced-motion and ?juice=0 feel scale, a full-screen flash limiter and coyote / press-buffer timers. Zero deps. Extracted from Surge.",
   "keywords": [
     "game",
