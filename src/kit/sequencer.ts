@@ -1,9 +1,11 @@
 import { Beat } from './beat';
 import { KitMode } from './kitMode';
+import type { Phase } from './phase';
 import type { BeatSpec, DefinedKit, KitCue, ParamValues } from './kitTypes';
 
 export interface ScheduledBeat {
   readonly beat: Beat;
+  readonly phase?: Phase;
   readonly atMs: number;
   readonly durationMs: number;
 }
@@ -28,7 +30,7 @@ function paramsFor(kit: DefinedKit, mode: KitMode): ParamValues {
 function place(spec: BeatSpec, params: ParamValues, placed: ReadonlyMap<Beat, ScheduledBeat>): ScheduledBeat {
   const anchor = spec.after === undefined ? undefined : placed.get(spec.after);
   const anchorMs = anchor === undefined ? 0 : anchor.atMs + (spec.atEnd === true ? anchor.durationMs : 0);
-  return { beat: spec.beat, atMs: anchorMs + total(params, spec.delayParams), durationMs: total(params, spec.durationParams) };
+  return { beat: spec.beat, phase: spec.phase, atMs: anchorMs + total(params, spec.delayParams), durationMs: total(params, spec.durationParams) };
 }
 
 /** Beat start times in ms after the commit frame, in firing order; `Off` keeps only the commit. */
@@ -83,6 +85,7 @@ export class KitRun {
       tier: this.kit.tier,
       mode: this.mode,
       beat: scheduled.beat,
+      phase: scheduled.phase,
       scheduledMs: scheduled.atMs,
       tMs: elapsed,
       durationMs: scheduled.durationMs,

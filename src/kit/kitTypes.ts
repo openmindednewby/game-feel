@@ -1,6 +1,7 @@
 import type { Beat } from './beat';
 import type { KitId } from './kitId';
 import type { KitMode } from './kitMode';
+import type { Phase } from './phase';
 import type { Tier } from './tier';
 
 export interface Range {
@@ -16,6 +17,7 @@ export const exactly = (value: number): Range => between(value, value);
 
 export interface BeatSpec {
   readonly beat: Beat;
+  readonly phase?: Phase;
   readonly after?: Beat;
   readonly atEnd?: boolean;
   readonly delayParams?: readonly string[];
@@ -34,6 +36,7 @@ export interface TierRanges {
 
 export interface KitDefinition {
   readonly id: KitId;
+  readonly playerInput?: boolean;
   readonly tiers: Readonly<Partial<Record<Tier, TierRanges>>>;
 }
 
@@ -58,6 +61,7 @@ export interface KitCue {
   readonly tier: Tier;
   readonly mode: KitMode;
   readonly beat: Beat;
+  readonly phase?: Phase;
   readonly scheduledMs: number;
   readonly tMs: number;
   readonly durationMs: number;

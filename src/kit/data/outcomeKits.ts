@@ -1,23 +1,24 @@
 import { Beat } from '../beat';
+import { Phase } from '../phase';
 import { KitId } from '../kitId';
 import { between, exactly } from '../kitTypes';
 import type { BeatSpec, KitDefinition } from '../kitTypes';
 
 const COMMIT: BeatSpec = { beat: Beat.Commit };
 const MAX_FULL_FLASH_ALPHA = 0.35;
-const SOUND_AND_HAPTIC: readonly BeatSpec[] = [{ beat: Beat.Sound }, { beat: Beat.Haptic }];
-const RETRY: BeatSpec = { beat: Beat.Retry, delayParams: ['retryMs'] };
+const SOUND_AND_HAPTIC: readonly BeatSpec[] = [{ beat: Beat.Sound, phase: Phase.Action }, { beat: Beat.Haptic, phase: Phase.Action }];
+const RETRY: BeatSpec = { beat: Beat.Retry, phase: Phase.FollowThrough, delayParams: ['retryMs'] };
 const RESULTS_AND_TALLY: readonly BeatSpec[] = [
-  { beat: Beat.Results, delayParams: ['resultsMs'] },
-  { beat: Beat.Tally, after: Beat.Results, durationParams: ['tallyMs'] },
+  { beat: Beat.Results, phase: Phase.FollowThrough, delayParams: ['resultsMs'] },
+  { beat: Beat.Tally, phase: Phase.FollowThrough, after: Beat.Results, durationParams: ['tallyMs'] },
 ];
 
 const REVEAL_TAIL: readonly BeatSpec[] = [
-  { beat: Beat.Sound, after: Beat.Reveal, durationParams: ['soundMs'] },
-  { beat: Beat.Sparkle, after: Beat.Reveal, durationParams: ['glowMs'] },
-  { beat: Beat.Haptic, after: Beat.Reveal },
-  { beat: Beat.Label, after: Beat.Reveal, delayParams: ['labelDelayMs'] },
-  { beat: Beat.Focus, after: Beat.Reveal, atEnd: true },
+  { beat: Beat.Sound, phase: Phase.Action, after: Beat.Reveal, durationParams: ['soundMs'] },
+  { beat: Beat.Sparkle, phase: Phase.Action, after: Beat.Reveal, durationParams: ['glowMs'] },
+  { beat: Beat.Haptic, phase: Phase.Action, after: Beat.Reveal },
+  { beat: Beat.Label, phase: Phase.FollowThrough, after: Beat.Reveal, delayParams: ['labelDelayMs'] },
+  { beat: Beat.Focus, phase: Phase.FollowThrough, after: Beat.Reveal, atEnd: true },
 ];
 
 export const UNLOCK_KIT: KitDefinition = {
@@ -26,11 +27,11 @@ export const UNLOCK_KIT: KitDefinition = {
     t1: {
       beats: [
         COMMIT,
-        { beat: Beat.Anticipation, durationParams: ['anticipationMs'] },
-        { beat: Beat.Reveal, after: Beat.Anticipation, atEnd: true, durationParams: ['revealMs'] },
+        { beat: Beat.Anticipation, phase: Phase.Anticipation, durationParams: ['anticipationMs'] },
+        { beat: Beat.Reveal, phase: Phase.Action, after: Beat.Anticipation, atEnd: true, durationParams: ['revealMs'] },
         ...REVEAL_TAIL,
       ],
-      reducedMotionBeats: [COMMIT, { beat: Beat.Reveal, durationParams: ['revealMs'] }, ...REVEAL_TAIL],
+      reducedMotionBeats: [COMMIT, { beat: Beat.Reveal, phase: Phase.Action, durationParams: ['revealMs'] }, ...REVEAL_TAIL],
       params: {
         anticipationMs: between(150, 400),
         revealFrom: exactly(0.6),
@@ -52,16 +53,16 @@ export const DEATH_KIT: KitDefinition = {
     t1: {
       beats: [
         COMMIT,
-        { beat: Beat.Hitstop, durationParams: ['hitstopMs'] },
-        { beat: Beat.Flash },
-        { beat: Beat.Shake, durationParams: ['shakeMs'] },
-        { beat: Beat.Particles },
+        { beat: Beat.Hitstop, phase: Phase.Action, durationParams: ['hitstopMs'] },
+        { beat: Beat.Flash, phase: Phase.Action },
+        { beat: Beat.Shake, phase: Phase.Action, durationParams: ['shakeMs'] },
+        { beat: Beat.Particles, phase: Phase.Action },
         ...SOUND_AND_HAPTIC,
-        { beat: Beat.SlowMo, after: Beat.Hitstop, atEnd: true, durationParams: ['slowMoMs'] },
-        { beat: Beat.Hold, after: Beat.Hitstop, atEnd: true, durationParams: ['holdMs'] },
+        { beat: Beat.SlowMo, phase: Phase.FollowThrough, after: Beat.Hitstop, atEnd: true, durationParams: ['slowMoMs'] },
+        { beat: Beat.Hold, phase: Phase.FollowThrough, after: Beat.Hitstop, atEnd: true, durationParams: ['holdMs'] },
         RETRY,
       ],
-      reducedMotionBeats: [COMMIT, { beat: Beat.Tint, durationParams: ['tintMs'] }, ...SOUND_AND_HAPTIC, { beat: Beat.Hold, durationParams: ['holdMs'] }, RETRY],
+      reducedMotionBeats: [COMMIT, { beat: Beat.Tint, phase: Phase.Action, durationParams: ['tintMs'] }, ...SOUND_AND_HAPTIC, { beat: Beat.Hold, phase: Phase.FollowThrough, durationParams: ['holdMs'] }, RETRY],
       params: {
         hitstopMs: between(60, 100),
         flashAlpha: between(0, MAX_FULL_FLASH_ALPHA),
@@ -86,12 +87,12 @@ export const WIN_KIT: KitDefinition = {
     t1: {
       beats: [
         COMMIT,
-        { beat: Beat.Hitstop, durationParams: ['hitstopMs'] },
-        { beat: Beat.Shake, durationParams: ['shakeMs'] },
-        { beat: Beat.Flash },
-        { beat: Beat.Particles },
+        { beat: Beat.Hitstop, phase: Phase.Action, durationParams: ['hitstopMs'] },
+        { beat: Beat.Shake, phase: Phase.Action, durationParams: ['shakeMs'] },
+        { beat: Beat.Flash, phase: Phase.Action },
+        { beat: Beat.Particles, phase: Phase.Action },
         ...SOUND_AND_HAPTIC,
-        { beat: Beat.Settle, after: Beat.Hitstop, atEnd: true, durationParams: ['settleMs'] },
+        { beat: Beat.Settle, phase: Phase.FollowThrough, after: Beat.Hitstop, atEnd: true, durationParams: ['settleMs'] },
         ...RESULTS_AND_TALLY,
       ],
       reducedMotionBeats: [COMMIT, ...SOUND_AND_HAPTIC, ...RESULTS_AND_TALLY],

@@ -1,17 +1,18 @@
 import { Beat } from '../beat';
+import { Phase } from '../phase';
 import { KitId } from '../kitId';
 import { between, exactly } from '../kitTypes';
 import type { BeatSpec, KitDefinition } from '../kitTypes';
 
 const COMMIT: BeatSpec = { beat: Beat.Commit };
 const AFTER_SNAP: readonly BeatSpec[] = [
-  { beat: Beat.Flash, after: Beat.Snap, atEnd: true, durationParams: ['flashMs'] },
-  { beat: Beat.Sound, after: Beat.Snap, atEnd: true, durationParams: ['clickMs'] },
-  { beat: Beat.Particles, after: Beat.Snap, atEnd: true },
-  { beat: Beat.Haptic, after: Beat.Snap, atEnd: true },
+  { beat: Beat.Flash, phase: Phase.Action, after: Beat.Snap, atEnd: true, durationParams: ['flashMs'] },
+  { beat: Beat.Sound, phase: Phase.Action, after: Beat.Snap, atEnd: true, durationParams: ['clickMs'] },
+  { beat: Beat.Particles, phase: Phase.Action, after: Beat.Snap, atEnd: true },
+  { beat: Beat.Haptic, phase: Phase.Action, after: Beat.Snap, atEnd: true },
 ];
-const BUMP_FEEDBACK: readonly BeatSpec[] = [{ beat: Beat.Sound, durationParams: ['soundMs'] }, { beat: Beat.Haptic }];
-const MOVE_BEATS: readonly BeatSpec[] = [COMMIT, { beat: Beat.Sound, durationParams: ['soundMs'] }, { beat: Beat.Camera }];
+const BUMP_FEEDBACK: readonly BeatSpec[] = [{ beat: Beat.Sound, phase: Phase.Action, durationParams: ['soundMs'] }, { beat: Beat.Haptic, phase: Phase.Action }];
+const MOVE_BEATS: readonly BeatSpec[] = [COMMIT, { beat: Beat.Sound, phase: Phase.Action, durationParams: ['soundMs'] }, { beat: Beat.Camera, phase: Phase.FollowThrough }];
 
 export const LOCK_KIT: KitDefinition = {
   id: KitId.Lock,
@@ -19,12 +20,12 @@ export const LOCK_KIT: KitDefinition = {
     t1: {
       beats: [
         COMMIT,
-        { beat: Beat.Snap, durationParams: ['snapMs'] },
-        { beat: Beat.Hitstop, after: Beat.Snap, atEnd: true, durationParams: ['hitstopMs'] },
-        { beat: Beat.Shake, after: Beat.Snap, atEnd: true, durationParams: ['shakeMs'] },
+        { beat: Beat.Snap, phase: Phase.Anticipation, durationParams: ['snapMs'] },
+        { beat: Beat.Hitstop, phase: Phase.Action, after: Beat.Snap, atEnd: true, durationParams: ['hitstopMs'] },
+        { beat: Beat.Shake, phase: Phase.Action, after: Beat.Snap, atEnd: true, durationParams: ['shakeMs'] },
         ...AFTER_SNAP,
       ],
-      reducedMotionBeats: [COMMIT, { beat: Beat.Snap }, ...AFTER_SNAP],
+      reducedMotionBeats: [COMMIT, { beat: Beat.Snap, phase: Phase.Anticipation }, ...AFTER_SNAP],
       params: {
         snapMs: between(60, 120),
         overshootPct: between(0, 5),
@@ -42,10 +43,11 @@ export const LOCK_KIT: KitDefinition = {
 
 export const BUMP_KIT: KitDefinition = {
   id: KitId.Bump,
+  playerInput: true,
   tiers: {
     t1: {
-      beats: [COMMIT, { beat: Beat.Nudge, durationParams: ['nudgeMs'] }, ...BUMP_FEEDBACK],
-      reducedMotionBeats: [COMMIT, { beat: Beat.Tint, durationParams: ['nudgeMs'] }, ...BUMP_FEEDBACK],
+      beats: [COMMIT, { beat: Beat.Nudge, phase: Phase.Action, durationParams: ['nudgeMs'] }, ...BUMP_FEEDBACK],
+      reducedMotionBeats: [COMMIT, { beat: Beat.Tint, phase: Phase.Action, durationParams: ['nudgeMs'] }, ...BUMP_FEEDBACK],
       params: {
         nudgeSize: between(0.1, 0.2),
         nudgeMs: between(80, 140),
@@ -63,6 +65,7 @@ export const BUMP_KIT: KitDefinition = {
 
 export const MOVE_KIT: KitDefinition = {
   id: KitId.Move,
+  playerInput: true,
   tiers: {
     t1: {
       beats: MOVE_BEATS,

@@ -78,7 +78,12 @@ function onCoin(nowMs: number): void {
 
 Commit and every 0 ms beat fire inside `playKit`; call `run.advance(nowMs)` each frame for the rest.
 `?juice=0` (`KitMode.Off`) plays only the commit. Each cue (`{kit, tier, mode, beat, scheduledMs,
-tMs, durationMs, params}`) lands in the trace, exposed as `window.__feelTrace` under `?feeltrace=1`.
+tMs, durationMs, params, phase}`) lands in the trace, exposed as `window.__feelTrace` under `?feeltrace=1`.
+
+Every beat but the commit carries a `Phase` (`anticipation`, `action`, `followThrough`, feel-kits.md
+§1b). `move` and `bump` are `playerInput` kits: `checkKit` fails one whose action beat starts after
+0 ms or whose anticipation ends after 33 ms (`PLAYER_INPUT_MAX_ANTICIPATION_MS`), and any beat with
+no phase. `checkPhases(definition, kit)` runs the same check on a kit of your own.
 
 ## Scripts
 

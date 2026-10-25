@@ -1,4 +1,5 @@
 import { Beat } from '../beat';
+import { Phase } from '../phase';
 import { KitId } from '../kitId';
 import { between, exactly } from '../kitTypes';
 import type { BeatSpec, KitDefinition, TierRanges } from '../kitTypes';
@@ -6,26 +7,26 @@ import type { BeatSpec, KitDefinition, TierRanges } from '../kitTypes';
 const COMMIT: BeatSpec = { beat: Beat.Commit };
 
 const POWER_UP_TAIL: readonly BeatSpec[] = [
-  { beat: Beat.Sound, after: Beat.Pop, durationParams: ['soundMs'] },
-  { beat: Beat.Sparkle, after: Beat.Pop, durationParams: ['sparkleLifeMs'] },
-  { beat: Beat.PlayerState, after: Beat.Pop, durationParams: ['auraMs'] },
-  { beat: Beat.HudTimer },
+  { beat: Beat.Sound, phase: Phase.Action, after: Beat.Pop, durationParams: ['soundMs'] },
+  { beat: Beat.Sparkle, phase: Phase.Action, after: Beat.Pop, durationParams: ['sparkleLifeMs'] },
+  { beat: Beat.PlayerState, phase: Phase.FollowThrough, after: Beat.Pop, durationParams: ['auraMs'] },
+  { beat: Beat.HudTimer, phase: Phase.Action },
 ];
 
 const POWER_UP: TierRanges = {
   beats: [
     COMMIT,
-    { beat: Beat.Magnet, durationParams: ['magnetMs'] },
-    { beat: Beat.Pop, after: Beat.Magnet, atEnd: true, durationParams: ['popMs'] },
+    { beat: Beat.Magnet, phase: Phase.Anticipation, durationParams: ['magnetMs'] },
+    { beat: Beat.Pop, phase: Phase.Action, after: Beat.Magnet, atEnd: true, durationParams: ['popMs'] },
     ...POWER_UP_TAIL,
-    { beat: Beat.Camera, after: Beat.Pop, durationParams: ['fovKickMs'] },
-    { beat: Beat.Haptic, after: Beat.Pop },
+    { beat: Beat.Camera, phase: Phase.FollowThrough, after: Beat.Pop, durationParams: ['fovKickMs'] },
+    { beat: Beat.Haptic, phase: Phase.Action, after: Beat.Pop },
   ],
   reducedMotionBeats: [
     COMMIT,
-    { beat: Beat.Pop, durationParams: ['popMs'] },
+    { beat: Beat.Pop, phase: Phase.Action, durationParams: ['popMs'] },
     ...POWER_UP_TAIL,
-    { beat: Beat.Haptic, after: Beat.Pop },
+    { beat: Beat.Haptic, phase: Phase.Action, after: Beat.Pop },
   ],
   params: {
     magnetMs: between(40, 100),
@@ -56,31 +57,31 @@ const POWER_UP: TierRanges = {
 };
 
 const HIT_SHARED: readonly BeatSpec[] = [
-  { beat: Beat.Flash, durationParams: ['flashMs'] },
-  { beat: Beat.Sound, durationParams: ['soundMs'] },
+  { beat: Beat.Flash, phase: Phase.Action, durationParams: ['flashMs'] },
+  { beat: Beat.Sound, phase: Phase.Action, durationParams: ['soundMs'] },
 ];
 const HIT_TAIL: readonly BeatSpec[] = [
-  { beat: Beat.Particles, durationParams: ['particleLifeMs'] },
-  { beat: Beat.Hud, durationParams: ['ghostBarMs'] },
-  { beat: Beat.Haptic, durationParams: ['hapticMs'] },
+  { beat: Beat.Particles, phase: Phase.Action, durationParams: ['particleLifeMs'] },
+  { beat: Beat.Hud, phase: Phase.Action, durationParams: ['ghostBarMs'] },
+  { beat: Beat.Haptic, phase: Phase.Action, durationParams: ['hapticMs'] },
 ];
 
 const HIT_LIGHT: TierRanges = {
   beats: [
     COMMIT,
-    { beat: Beat.Hitstop, durationParams: ['hitstopMs'] },
+    { beat: Beat.Hitstop, phase: Phase.Action, durationParams: ['hitstopMs'] },
     ...HIT_SHARED,
-    { beat: Beat.Shake },
+    { beat: Beat.Shake, phase: Phase.Action },
     ...HIT_TAIL,
-    { beat: Beat.Squash, after: Beat.Hitstop, atEnd: true, durationParams: ['squashReturnMs'] },
-    { beat: Beat.Grace, after: Beat.Hitstop, atEnd: true, durationParams: ['graceMs'] },
+    { beat: Beat.Squash, phase: Phase.FollowThrough, after: Beat.Hitstop, atEnd: true, durationParams: ['squashReturnMs'] },
+    { beat: Beat.Grace, phase: Phase.FollowThrough, after: Beat.Hitstop, atEnd: true, durationParams: ['graceMs'] },
   ],
   reducedMotionBeats: [
     COMMIT,
     ...HIT_SHARED,
     ...HIT_TAIL,
-    { beat: Beat.Squash, durationParams: ['squashReturnMs'] },
-    { beat: Beat.Grace, durationParams: ['graceMs'] },
+    { beat: Beat.Squash, phase: Phase.FollowThrough, durationParams: ['squashReturnMs'] },
+    { beat: Beat.Grace, phase: Phase.FollowThrough, durationParams: ['graceMs'] },
   ],
   params: {
     hitstopMs: between(30, 50),

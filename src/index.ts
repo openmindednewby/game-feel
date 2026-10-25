@@ -20,6 +20,8 @@ export type { Forgiveness } from './forgiveness/graceTimer';
 export { KitId } from './kit/kitId';
 export { Tier } from './kit/tier';
 export { Beat } from './kit/beat';
+export { PLAYER_INPUT_MAX_ANTICIPATION_MS, Phase } from './kit/phase';
+export { checkPhases } from './kit/phases';
 export { KitMode, kitModeFrom } from './kit/kitMode';
 export { between, exactly } from './kit/kitTypes';
 export type {

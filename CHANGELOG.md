@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.0
+
+- Kit phases (FEEL-KIT-1 amendment "Every kit has anticipation, action, follow-through"): `Phase` on every `KIT_RANGES` beat, `playerInput` on `move` and `bump`, `checkKit` / `checkPhases` fail an unphased beat, a player-input action after 0 ms or a player-input anticipation over 33 ms (`PLAYER_INPUT_MAX_ANTICIPATION_MS`); `ScheduledBeat` and `KitCue` (the trace) carry the phase.
+
 ## 0.2.0
 
 - `feelKit` module (FEEL-KIT-1 "Every game event plays its feel kit", step 3a): `KIT_RANGES` (pickup, power-up, hit, lock, bump, unlock, death, win, move as data: beat order, per-tier ranges, reduced-motion variant), `checkKit` / `expectKitInRange` / `defineKit` range validation, `playKit` / `KitRun` / `scheduleKit` beat sequencer on the game clock (commit frame 0, `KitMode` full / reduced / off), `FeelTrace` + `exposeFeelTrace` (`window.__feelTrace`, `?feeltrace=1`).

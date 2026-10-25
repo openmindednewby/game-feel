@@ -3,6 +3,7 @@ import { FeelTrace } from './feelTrace';
 import { KitId } from './kitId';
 import { KitMode } from './kitMode';
 import type { DefinedKit, KitConfig, KitCue } from './kitTypes';
+import { Phase } from './phase';
 import { playKit, scheduleKit } from './sequencer';
 import { Tier } from './tier';
 import { defineKit } from './validate';
@@ -131,3 +132,23 @@ describe('scheduleKit', () => {
     expect(beats.map((beat) => beat.atMs)).toEqual([0, 0, 40]);
   });
 });
+
+describe('playKit phases', () => {
+  it('with pickup T1 played to the end, records each beat with its phase', () => {
+    const trace = new FeelTrace();
+    const run = playKit(defineKit(PICKUP_COMMON), { trace }, 0);
+
+    run.advance(1000);
+
+    expect(trace.entries.map((cue: KitCue) => [cue.beat, cue.phase])).toEqual([
+      [Beat.Commit, undefined],
+      [Beat.Magnet, Phase.Anticipation],
+      [Beat.Pop, Phase.Action],
+      [Beat.Sound, Phase.Action],
+      [Beat.Sparkle, Phase.Action],
+      [Beat.Haptic, Phase.Action],
+      [Beat.Counter, Phase.FollowThrough],
+    ]);
+  });
+});
+

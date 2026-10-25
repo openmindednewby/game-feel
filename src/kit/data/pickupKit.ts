@@ -1,32 +1,33 @@
 import { Beat } from '../beat';
+import { Phase } from '../phase';
 import { KitId } from '../kitId';
 import { between, exactly } from '../kitTypes';
 import type { BeatSpec, KitDefinition, ParamRanges } from '../kitTypes';
 
 const COMMIT: BeatSpec = { beat: Beat.Commit };
-const MAGNET: BeatSpec = { beat: Beat.Magnet, durationParams: ['magnetMs'] };
-const POP_AFTER_MAGNET: BeatSpec = { beat: Beat.Pop, after: Beat.Magnet, atEnd: true, durationParams: ['popUpMs', 'popOutMs'] };
-const POP_AT_COMMIT: BeatSpec = { beat: Beat.Pop, durationParams: ['popUpMs', 'popOutMs'] };
+const MAGNET: BeatSpec = { beat: Beat.Magnet, phase: Phase.Anticipation, durationParams: ['magnetMs'] };
+const POP_AFTER_MAGNET: BeatSpec = { beat: Beat.Pop, phase: Phase.Action, after: Beat.Magnet, atEnd: true, durationParams: ['popUpMs', 'popOutMs'] };
+const POP_AT_COMMIT: BeatSpec = { beat: Beat.Pop, phase: Phase.Action, durationParams: ['popUpMs', 'popOutMs'] };
 const SOUND_AND_SPARKLE: readonly BeatSpec[] = [
-  { beat: Beat.Sound, after: Beat.Pop, durationParams: ['soundMs'] },
-  { beat: Beat.Sparkle, after: Beat.Pop, durationParams: ['sparkleLifeMs'] },
+  { beat: Beat.Sound, phase: Phase.Action, after: Beat.Pop, durationParams: ['soundMs'] },
+  { beat: Beat.Sparkle, phase: Phase.Action, after: Beat.Pop, durationParams: ['sparkleLifeMs'] },
 ];
 const COUNTER_AND_HAPTIC: readonly BeatSpec[] = [
-  { beat: Beat.Counter, after: Beat.Pop, delayParams: ['flyMs'], durationParams: ['counterBumpMs', 'counterRollMs'] },
-  { beat: Beat.Haptic, after: Beat.Pop },
+  { beat: Beat.Counter, phase: Phase.FollowThrough, after: Beat.Pop, delayParams: ['flyMs'], durationParams: ['counterBumpMs', 'counterRollMs'] },
+  { beat: Beat.Haptic, phase: Phase.Action, after: Beat.Pop },
 ];
-const LOCAL_FLASH: BeatSpec = { beat: Beat.Flash, after: Beat.Pop, durationParams: ['flashMs'] };
+const LOCAL_FLASH: BeatSpec = { beat: Beat.Flash, phase: Phase.Action, after: Beat.Pop, durationParams: ['flashMs'] };
 
 const BEATS: readonly BeatSpec[] = [COMMIT, MAGNET, POP_AFTER_MAGNET, ...SOUND_AND_SPARKLE, ...COUNTER_AND_HAPTIC];
 const REDUCED_BEATS: readonly BeatSpec[] = [COMMIT, POP_AT_COMMIT, ...SOUND_AND_SPARKLE, ...COUNTER_AND_HAPTIC];
 const JACKPOT_BEATS: readonly BeatSpec[] = [
   COMMIT,
-  { beat: Beat.Hitstop, durationParams: ['hitstopMs'] },
+  { beat: Beat.Hitstop, phase: Phase.Action, durationParams: ['hitstopMs'] },
   MAGNET,
   POP_AFTER_MAGNET,
   ...SOUND_AND_SPARKLE,
   LOCAL_FLASH,
-  { beat: Beat.Shake, after: Beat.Pop },
+  { beat: Beat.Shake, phase: Phase.Action, after: Beat.Pop },
   ...COUNTER_AND_HAPTIC,
 ];
 const JACKPOT_REDUCED_BEATS: readonly BeatSpec[] = [COMMIT, POP_AT_COMMIT, ...SOUND_AND_SPARKLE, LOCAL_FLASH, ...COUNTER_AND_HAPTIC];

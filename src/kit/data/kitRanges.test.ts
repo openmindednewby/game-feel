@@ -1,4 +1,5 @@
 import { Beat } from '../beat';
+import { KitId } from '../kitId';
 import type { BeatSpec, Range, TierRanges } from '../kitTypes';
 import { KIT_RANGES } from './kitRanges';
 
@@ -59,5 +60,21 @@ describe('KIT_RANGES', () => {
     const strays = overrides.filter((name) => !(name in ranges.params));
 
     expect(strays).toEqual([]);
+  });
+
+  it.each(everyTier)('%s, gives every beat but the commit a phase', (_label, ranges) => {
+    const beats = [...ranges.beats, ...ranges.reducedMotionBeats];
+
+    const unphased = beats.filter((spec) => spec.beat !== Beat.Commit && spec.phase === undefined).map((spec) => spec.beat);
+
+    expect(unphased).toEqual([]);
+  });
+
+  it('with the nine kits, marks only move and bump as player input', () => {
+    const kits = Object.values(KIT_RANGES);
+
+    const playerInput = kits.filter((kit) => kit.playerInput === true).map((kit) => kit.id);
+
+    expect(playerInput).toEqual([KitId.Bump, KitId.Move]);
   });
 });
