@@ -23,8 +23,17 @@ export class FeelTrace {
   }
 }
 
-/** `?feeltrace=1` asks the game to expose its trace. */
-export const feelTraceRequested = (search: string): boolean => new URLSearchParams(search).get('feeltrace') === '1';
+const FEEL_TRACE_PARAM = 'feeltrace';
+const FEEL_TRACE_ON = '1';
+
+/** `?feelTrace=1` (any letter case) asks the game to expose its trace. */
+export function feelTraceRequested(search: string): boolean {
+  let requested = false;
+  new URLSearchParams(search).forEach((value: string, name: string): void => {
+    if (name.toLowerCase() === FEEL_TRACE_PARAM && value === FEEL_TRACE_ON) {requested = true;}
+  });
+  return requested;
+}
 
 /** Publishes the trace entries as `target.__feelTrace`, usually on `window`. */
 export function exposeFeelTrace(trace: FeelTrace, target: Record<string, unknown>): void {

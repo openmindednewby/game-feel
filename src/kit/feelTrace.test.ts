@@ -62,6 +62,22 @@ describe('feelTraceRequested', () => {
     expect(requested).toBe(true);
   });
 
+  it('with the documented ?feelTrace=1 spelling, returns true', () => {
+    const search = '?seed=4&feelTrace=1';
+
+    const requested = feelTraceRequested(search);
+
+    expect(requested).toBe(true);
+  });
+
+  it('with ?FEELTRACE=0, returns false', () => {
+    const search = '?FEELTRACE=0';
+
+    const requested = feelTraceRequested(search);
+
+    expect(requested).toBe(false);
+  });
+
   it('without the flag, returns false', () => {
     const search = '?seed=4';
 
