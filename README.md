@@ -94,3 +94,20 @@ package, so there is no showcase story).
 ## License
 
 MIT
+
+## Feel-kit presets, ranking and the options page
+
+```ts
+import { FEEL_PRESETS, OWNER_DEFAULT_PICKS, presetConfig, checkRanking, DEFAULT_RANK_CHAIN, DEFAULT_RANK_SKIP, defineKit } from '@dloizides/game-feel';
+
+const win = defineKit(presetConfig('win')!);
+const breaches = checkRanking(FEEL_PRESETS.map((e) => ({ id: e.id, options: e.options })), OWNER_DEFAULT_PICKS, DEFAULT_RANK_CHAIN, DEFAULT_RANK_SKIP);
+```
+
+A new game writes its kits JSON (`{ game, kits: [{ id, kit, tier, title, today?, options: [{ key, name, line, params, reducedMotion }], todayParams? }] }`) and builds its pick page:
+
+```bash
+npx game-feel-options-page aurora-kits.json docs/design/feel-kits/aurora-feel-kits.html
+```
+
+`buildOptionsPage(input)` from `@dloizides/game-feel/options-page` does the same in code. Picks save to the artifact db as `picks/<eventId>` = `{ pick, at }`.

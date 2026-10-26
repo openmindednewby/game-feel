@@ -1,0 +1,16 @@
+    <div class="row">
+      <div class="seg" role="group" aria-label="Speed">
+        <button id="sp-1" type="button" data-speed="1" aria-pressed="true">1×</button>
+        <button id="sp-025" type="button" data-speed="0.25" aria-pressed="false">¼× slow</button>
+      </div>
+      <button id="rm" class="toggle" type="button" aria-pressed="false">Reduced motion</button>
+      <button id="snd" class="toggle" type="button" aria-pressed="false">Sound</button>
+    </div>
+    <div class="row"><span class="lbl-s">One letter for all events</span>
+      <div class="seg pick" role="group" aria-label="Pick one letter for all events">
+        <button id="all-A" type="button" data-all="A">A Settle</button><button id="all-B" type="button" data-all="B">B Snap</button><button id="all-C" type="button" data-all="C">C Rush</button>
+      </div>
+    </div>
+    <div class="rank" id="rank" data-state="ok" aria-live="polite"></div>
+    <p class="save" id="save">Connecting the pick store…</p>
+    <nav class="nav" id="nav" aria-label="Events"></nav>

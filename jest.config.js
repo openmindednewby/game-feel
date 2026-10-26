@@ -7,7 +7,8 @@ module.exports = {
   collectCoverageFrom: [
     'src/**/*.ts',
     '!src/**/*.d.ts',
-    '!src/**/index.ts'
+    '!src/**/index.ts',
+    '!src/**/bin.ts'
   ],
   coverageThreshold: {
     global: {
@@ -18,8 +19,9 @@ module.exports = {
     }
   },
   coverageReporters: ['text', 'lcov', 'html'],
-  moduleFileExtensions: ['ts', 'js', 'json'],
+  moduleFileExtensions: ['ts', 'js', 'json', 'txt'],
   transform: {
-    '^.+\\.ts$': ['ts-jest', { tsconfig: 'tsconfig.test.json' }]
+    '^.+\\.ts$': ['ts-jest', { tsconfig: 'tsconfig.test.json' }],
+    '^.+\\.txt$': '<rootDir>/jest.text-transform.js'
   }
 };

@@ -1,7 +1,7 @@
 {
   "name": "@dloizides/game-feel",
   "version": "0.3.0",
-  "description": "Engine-free game feel: trauma screenshake with smooth noise, a hitstop and slow-mo clock, a reduced-motion and ?juice=0 feel scale, a full-screen flash limiter and coyote / press-buffer timers. Zero deps. Extracted from Surge.",
+  "description": "Engine-free game feel: trauma screenshake with smooth noise, a hitstop and slow-mo clock, a reduced-motion and ?juice=0 feel scale, a full-screen flash limiter and coyote / press-buffer timers. Feel-kit presets (Settle / Snap / Rush), the J-3 ranking check and an options-page builder. Zero deps. Extracted from Surge.",
   "keywords": [
     "game",
     "feel",
@@ -42,7 +42,24 @@
         "types": "./dist/index.d.ts",
         "default": "./dist/index.js"
       }
+    },
+    "./options-page": {
+      "require": {
+        "types": "./dist/options-page.d.ts",
+        "default": "./dist/options-page.js"
+      },
+      "import": {
+        "types": "./dist/options-page.d.mts",
+        "default": "./dist/options-page.mjs"
+      },
+      "default": {
+        "types": "./dist/options-page.d.ts",
+        "default": "./dist/options-page.js"
+      }
     }
+  },
+  "bin": {
+    "game-feel-options-page": "./dist/options-page-cli.js"
   },
   "files": [
     "dist",
